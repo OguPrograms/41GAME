@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>42 GAME</title>
+        <link rel="icon" type="image/jpg" href="favicon.png"/>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
+        <link rel="stylesheet" color="#fea70a" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    </head>
+    <body>
+        <div class="logo1">
+            <div class="title-botom"></div>
+            <div class="title-wraper">
+                <h1>42</h1>
+                <P>GAME</P>
+            </div>
+        </div>
+        <div class="logo2">
+            <div class="title-botom"></div>
+            <div class="title-wraper">
+                <h1>42</h1>
+                <P>GAME</P>
+            </div>
+        </div>
+        <div id="game-wraper">
+            <div class="game">
+                <div id="box" class="box-wraper">
+                    <span id="question_box" class="material-symbols-outlined">?</span>
+                </div>
+                <div class="display-wraper">
+                    <p>Select a number:</p>
+                    <div>
+                        <div class="buttons-wraper">
+                            <button onclick="restart()">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fea70a"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+                            </button>
+                            <input type="number" min="0" max="42" id="num-bar" class="num-bar">
+                            <button onclick="guest()">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fea70a"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg>
+                            </button>
+                        </div>
+                        <div>Money <span id="money">500</span>c</div>
+                        <div>Try -<span id="try">30</span>c</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dropdown" class="dropdown">
+            <h1>YOU LOSE!</h1>
+            <h2><span id="score"></span> numbers found</h2>
+            <button onclick="rerestart()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fea70a"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+            </button>
+        </div>
+        <script>
+            const stop = ms => new Promise(resolve => setTimeout(resolve, ms));
+            let MAX_NUM = 42;
+            let money = 500;
+            let secrete_num = Math.floor(Math.random()*MAX_NUM+1)+1;
+            let num_tryes = 0;
+            let correct_nums = 0;
+
+            document.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    guest();
+                }
+            });
+
+            function restart(){
+                secrete_num = Math.floor(Math.random()*MAX_NUM+1);
+                num_tryes = 0;
+                document.getElementById('question_box').innerHTML = "?";
+                document.getElementById('question_box').style.fontFamily = "Rye";
+                document.getElementById("try").textContent = (num_tryes*5)+25;
+            }
+
+            function guest(){
+                console.log(correct_nums);
+                let num = document.getElementById("num-bar").value;
+                flash(1);
+                if (secrete_num == num){
+                    money += 100;
+                    document.getElementById('question_box').innerHTML = "+100";
+                    document.getElementById('question_box').innerHTML = secrete_num;
+                    document.getElementById('question_box').style.fontFamily = "Rye";
+                    correct_nums += 1;
+                    flash(5);
+                    stop(1000).then(() => {
+                        restart();
+                    });
+                } else if ( 0 < num && num <= MAX_NUM){
+                    num_tryes += 1;
+                    money = money - (num_tryes*5)-25;
+                    if (num < secrete_num){
+                        document.getElementById('question_box').innerHTML = 'keyboard_double_arrow_up';
+                        document.getElementById('question_box').style.fontFamily = "Material Symbols Outlined";
+                    }else{
+                        document.getElementById('question_box').innerHTML = "keyboard_double_arrow_down";
+                        document.getElementById('question_box').style.fontFamily = "Material Symbols Outlined";
+                    }
+                } else {
+                    alert("Numbers will be between 1 and " + MAX_NUM);
+                }
+                if(money <= 0){
+                    end();
+                }
+                document.getElementById("money").textContent = money;
+                document.getElementById("try").textContent = (num_tryes*5)+25;
+            }
+
+            async function flash(x) {
+                for (let i = 0; i <= x-1; i++) {
+                    document.getElementById('box').style.backgroundColor = "#fea70a";
+                    document.getElementById('question_box').style.color = "#d01935";
+                    
+                    await stop(100);
+                    
+                    document.getElementById('box').style.backgroundColor = "#d01935";
+                    document.getElementById('question_box').style.color = "#fea70a";
+
+                    await stop(100);
+                }
+            }
+
+            function end(){
+                document.getElementById('dropdown').style.display = "flex";
+                document.getElementById('game-wraper').style.display = "none"
+                document.getElementById('score').textContent = correct_nums
+            }
+
+            function rerestart(){
+                document.getElementById('dropdown').style.display = "none";
+                document.getElementById('game-wraper').style.display = "flex"
+                money = 500;
+                correct_nums = 0;
+                restart();
+                document.getElementById("money").textContent = money;
+            }
+        </script>
+    </body>
+</html>
