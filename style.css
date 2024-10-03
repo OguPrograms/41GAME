@@ -4,7 +4,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-block: 10%;
+    margin-top: 10%;
     background-color: #121639;
     font-family: Rye;
 }
